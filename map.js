@@ -27,17 +27,40 @@ map.addLayer(mapWarperLayer);
 map.addLayer(openStreetMapLayer);
 
 // For CSV data with latitude and longitude
-omnivore.csv('data/historical-sites.csv')
-    .on('ready', function(layer) {
-        this.eachLayer(function(marker) {
-            marker.bindPopup(
-                `<h3>${marker.feature.properties.name}</h3>
-                 <p>${marker.feature.properties.description}</p>
-                 <p>Date: ${marker.feature.properties.date}</p>`
-            );
-        });
-    })
-    .addTo(map);
+//omnivore.csv('data/historical-sites.csv')
+   // .on('ready', function(layer) {
+       // this.eachLayer(function(marker) {
+         //  marker.bindPopup(
+             //   `<h3>${marker.feature.properties.name}</h3>
+               //  <p>${marker.feature.properties.description}</p>
+               //  <p>Date: ${marker.feature.properties.date}</p>`
+          //  );
+       // });
+   // })
+   // .addTo(map);
+
+// Alternatively, if you had GeoJSON data
+// you could use this    
+fetch('data/historical-boundaries.geojson')
+    .then(response => response.json())
+    .then(data => {
+        L.geoJSON(data, {
+            style: function(feature) {
+                return {
+                    color: "#ff7800",
+                    weight: 2,
+                    opacity: 0.65
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                layer.bindPopup(`
+                    <h3>${feature.properties.name}</h3>
+                    <p>${feature.properties.description}</p>
+                `);
+            }
+        }).addTo(map);
+    });
+
 // Add a simple timeline control
 const timelineControl = L.control({position: 'bottom'});
 
@@ -93,3 +116,23 @@ function createCustomIcon(type) {
         iconSize: [30, 30]
     });
 }
+
+// time based animations
+let currentYear = 1800;
+const animationInterval = setInterval(() => {
+    currentYear++;
+    if (currentYear > 2000) {
+        clearInterval(animationInterval);
+        return;
+    }
+    // Update your map layers based on the current year
+    updateMapForYear(currentYear);
+}, 100);
+
+// Add MarkerCluster plugin
+const markers = L.markerClusterGroup();
+omnivore.csv('data/historical-sites.csv')
+    .on('ready', function(layer) {
+        markers.addLayer(layer);
+    });
+map.addLayer(markers);
