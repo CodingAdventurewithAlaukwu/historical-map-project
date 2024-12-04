@@ -94,6 +94,6 @@ function createCustomIcon(type) {
     });
 }
 
-git add .
+git add
 git commit -m "Add historical map"
 git push origin main
