@@ -93,7 +93,3 @@ function createCustomIcon(type) {
         iconSize: [30, 30]
     });
 }
-
-git add .
-git commit -m "Add historical map"
-git push origin main
